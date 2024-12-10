@@ -1,0 +1,36 @@
+parameters:
+  - name: 'agent'
+    displayName: 'virtual image'
+    type: 'string'
+    default: 'ubuntu-24.04'
+  - name: 'javaVersion'
+    displayName: 'jdk version'
+    type: 'string'
+    default: '1.8'
+  - name: 'Goal'
+    displayName: 'maven goal'
+    type: 'string'
+    default: 'clean package' 
+     
+jobs:
+  - job: 'BUILD_JOB'
+    pool:
+      vmImage: ${{ parameters.agent }}
+    displayName: 'BUILD_JOB'
+    steps:
+      - task: Maven@4
+        inputs:
+          mavenPOMFile: 'pom.xml' 
+          goals: ${{ parameters.Goal }}
+          publishJUnitResults: true
+          testResultsFiles: '**/*.xml'
+          javaHomeOption: 'JDKVersion'
+          jdkVersionOption: ${{ parameters.javaVersion }}
+      - task: CopyFiles@2
+        inputs:
+          Contents: '**/*.jar'
+          TargetFolder: $(Build.ArtifactStagingDirectory)
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'snapshot-$(Build.Repository.Name)'
