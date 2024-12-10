@@ -6,12 +6,12 @@ parameters:
   - name: 'javaVersion'
     displayName: 'jdk version'
     type: 'string'
-    default: '1.8'
+    default: '1.17'
   - name: 'Goal'
     displayName: 'maven goal'
     type: 'string'
-    default: 'clean package' 
-     
+    default: 'verify' 
+
 jobs:
   - job: 'BUILD_JOB'
     pool:
@@ -19,6 +19,7 @@ jobs:
     displayName: 'BUILD_JOB'
     steps:
       - task: Maven@4
+        condition: eq(${{ parameters.agent }}, ubuntu-24.04)
         inputs:
           mavenPOMFile: 'pom.xml' 
           goals: ${{ parameters.Goal }}
@@ -26,6 +27,12 @@ jobs:
           testResultsFiles: '**/*.xml'
           javaHomeOption: 'JDKVersion'
           jdkVersionOption: ${{ parameters.javaVersion }}
+      - task: Maven@4
+        inputs:
+          mavenPOMFile: 'pom.xml' 
+          goals: ${{ parameters.Goal }}
+          publishJUnitResults: true
+          testResultsFiles: '**/*.xml'
       - task: CopyFiles@2
         inputs:
           Contents: '**/*.jar'
