@@ -35,7 +35,7 @@ jobs:
       - task: Maven@4
         condition: and(
           ne(${{ parameters.pool }}, 'Default'),
-          eq(${{ parameters.vmImage }}, 'ubuntu')
+          eq(${{ parameters.Image }}, 'ubuntu')
           )
         inputs:
           mavenPOMFile: 'pom.xml' 
