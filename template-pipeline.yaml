@@ -30,7 +30,7 @@ jobs:
           javaHomeOption: 'JDKVersion'
           jdkVersionOption: ${{ parameters.javaVersion }}
       - task: Maven@4
-        condition: eq(${{ parameters.pool.vmImage }}, 'Default', and '')
+        condition: eq(${{ parameters.pool.vmImage }}, 'Default', and ' ')
         inputs:
           mavenPOMFile: 'pom.xml' 
           goals: ${{ parameters.Goal }}
