@@ -1,8 +1,8 @@
 parameters:
-  - name: 'agent'
+  - name: 'pool'
     displayName: 'virtual image'
     type: 'string'
-    default: 'ubuntu-24.04'
+    default: ''
   - name: 'javaVersion'
     displayName: 'jdk version'
     type: 'string'
@@ -15,11 +15,11 @@ parameters:
 jobs:
   - job: 'BUILD_JOB'
     pool:
-      vmImage: ${{ parameters.agent }}
+      name: ${{ parameters.pool }}
+      vmImage: 'ubuntu-24.04'
     displayName: 'BUILD_JOB'
     steps:
       - task: Maven@4
-        condition: eq(${{ parameters.agent }}, ubuntu-24.04)
         inputs:
           mavenPOMFile: 'pom.xml' 
           goals: ${{ parameters.Goal }}
@@ -28,6 +28,7 @@ jobs:
           javaHomeOption: 'JDKVersion'
           jdkVersionOption: ${{ parameters.javaVersion }}
       - task: Maven@4
+        condition: eq(${{ parameters.pool }}, 'Default')
         inputs:
           mavenPOMFile: 'pom.xml' 
           goals: ${{ parameters.Goal }}
