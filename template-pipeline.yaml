@@ -33,7 +33,10 @@ jobs:
           javaHomeOption: 'JDKVersion'
           jdkVersionOption: ${{ parameters.javaVersion }}
       - task: Maven@4
-        condition: and(ne(${{ parameters.pool }}, 'Default') startsWith(${{ parameters.image }}, 'ubuntu'))
+        condition: and(
+          ne(${{ parameters.pool }}, 'Default'),
+          contains(${{ parameters.image }}, 'ubuntu')
+          )
         inputs:
           mavenPOMFile: 'pom.xml' 
           goals: ${{ parameters.Goal }}
