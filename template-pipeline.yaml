@@ -1,8 +1,10 @@
 parameters:
   - name: 'pool'
     displayName: 'virtual image'
-    type: 'string'
-    default: ''
+    type: 'object'
+    default:
+      name: 'Default'
+      vmImage: ''
   - name: 'javaVersion'
     displayName: 'jdk version'
     type: 'string'
@@ -28,7 +30,7 @@ jobs:
           javaHomeOption: 'JDKVersion'
           jdkVersionOption: ${{ parameters.javaVersion }}
       - task: Maven@4
-        condition: eq(${{ parameters.pool }}, 'Default')
+        condition: eq(${{ parameters.pool.vmImage }}, 'Default','')
         inputs:
           mavenPOMFile: 'pom.xml' 
           goals: ${{ parameters.Goal }}
