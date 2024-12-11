@@ -1,4 +1,5 @@
-
-jobs:
-  - template: ./template-pipeline.yaml
-  
+stages:
+  - stage: 'BUILD_STAGE'
+    displayName: 'BUILD_STAGE'
+    jobs:
+      - template: ./template-pipeline.yaml
