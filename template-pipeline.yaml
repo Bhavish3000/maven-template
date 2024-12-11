@@ -1,48 +1,48 @@
 parameters:
-  - name: 'pool'
-    displayName: 'agent pool'
-    type: 'string'
-    default: 'Default'
-  - name: 'image'
-    displayName: 'vmimage'
-    type: 'string'
-    default: 'ubuntu-24.04'
   - name: 'javaVersion'
     displayName: 'jdk version'
     type: 'string'
-    default: '1.17'
+    default: ''
   - name: 'Goal'
     displayName: 'maven goal'
     type: 'string'
     default: 'verify' 
+  - name: 'testResultspath'
+    displayName: 'testResultsFiles'
+    type: 'string'
+    default: '**/*.xml'
+  - name: 'publishJUnitResults'
+    displayName: 'publishJUnitResults'
+    type: 'string'
+    default: true
+  - name: 'copyfilecontent'
+    displayName: 'CopyFiles'
+    type: 'string'
+    default: '**/*.jar'
 
 jobs:
   - job: 'BUILD_JOB'
-    pool:
-      name: ${{ parameters.pool }}
-      vmImage: 'ubuntu-24.04'
     displayName: 'BUILD_JOB'
     steps:
       - task: Maven@4
-        condition: eq(${{ parameters.pool }}, 'Default')
         inputs:
           mavenPOMFile: 'pom.xml' 
           goals: ${{ parameters.Goal }}
-          publishJUnitResults: true
-          testResultsFiles: '**/*.xml'
+          publishJUnitResults: ${{ parameters.publishJUnitResults }}
+          testResultsFiles: ${{ parameters.testResultspath }}
           javaHomeOption: 'JDKVersion'
           jdkVersionOption: ${{ parameters.javaVersion }}
+          condition: ne(${{ parameters.javaVersion }}, '')
       - task: Maven@4
-        condition: and(
-          ne(${{ parameters.pool }}, 'Default'),contains(${{ parameters.image }}, 'ubuntu'))
         inputs:
           mavenPOMFile: 'pom.xml' 
           goals: ${{ parameters.Goal }}
-          publishJUnitResults: true
-          testResultsFiles: '**/*.xml'
+          publishJUnitResults: ${{ parameters.publishJUnitResults }}
+          testResultsFiles: ${{ parameters.testResultspath }}
+          condition: eq(${{ parameters.javaVersion }}, '')
       - task: CopyFiles@2
         inputs:
-          Contents: '**/*.jar'
+          Contents: ${{ parameters.copyfilecontent }}
           TargetFolder: $(Build.ArtifactStagingDirectory)
       - task: PublishBuildArtifacts@1
         inputs:
