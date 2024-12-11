@@ -3,3 +3,9 @@ stages:
     displayName: 'BUILD_STAGE'
     jobs:
       - template: ./template-pipeline.yaml
+        parameters:
+          javaVersion: '1.8'
+          Goal: 'clean package'
+          testResultspath: '**/*.xml'
+          publishJUnitResults: true
+          copyfilecontent: '**/*.jar'
